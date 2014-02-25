@@ -2687,6 +2687,32 @@ CPPFLAGS="$CPPFLAGS '-DPLUGIN_DIR=\"\$(plugindir)\"'"
 PLUGIN_LIBS=""
 AC_SUBST(PLUGIN_LIBS)
 
+
+dnl Use extcap by default
+extcapdir='${libdir}/wireshark/extcap/${VERSION}'
+AC_ARG_WITH(extcap,
+  AC_HELP_STRING( [--with-extcap@<:@=DIR@:>@],
+                  [use extcap for external capture sources (installed in DIR, if supplied) @<:@default=yes, if possible@:>@]),
+[
+  if test "x$withval" = "xno"; then
+      have_extcap=no
+  elif test "x$withval" = "xyes"; then
+      have_extcap=yes
+  elif test "x$withval" != "xyes"; then
+      have_extcap=yes
+      extcapdir ="$withval"
+  fi
+],[
+    have_extcap=yes
+])
+AM_CONDITIONAL(HAVE_EXTCAP, test "x$have_extcap" = "xyes")
+if test "x$have_extcap" = "xyes"
+then
+  AC_DEFINE(HAVE_EXTCAP, 1, [Define if external capture sources should be enabled])
+fi
+AC_SUBST(extcapdir)
+CPPFLAGS="$CPPFLAGS '-DEXTCAP_DIR=\"\$(extcapdir)\"'"
+
 #
 # Check if (emem) memory allocations must be 8-byte aligned.
 # I haven't been able to write C code that reliably makes that determination
@@ -3068,6 +3094,7 @@ echo "  Install dumpcap with capabilities : $setcap_message"
 echo "             Install dumpcap setuid : $setuid_message"
 echo "                  Use dumpcap group : $dumpcap_group_message"
 echo "                        Use plugins : $have_plugins"
+echo "       Use external capture sources : $have_extcap"
 echo "                    Use Lua library : $lua_message"
 echo "                 Use Python binding : $python_message"
 echo "                   Build rtp_player : $portaudio_message"

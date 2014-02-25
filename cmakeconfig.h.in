@@ -21,6 +21,12 @@
 /* Directory where plugins reside */
 #define PLUGIN_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/@CPACK_PACKAGE_NAME@/plugins/${CPACK_PACKAGE_VERSION}"
 
+/* Directory where extcap hooks reside */
+#define EXTCAP_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/@CPACK_PACKAGE_NAME@/extcap/${CPACK_PACKAGE_VERSION}"
+
+/* Define to 1 if we want to enable extcap */
+#cmakedefine HAVE_EXTCAP 1
+
 /* Define to 1 if we want to enable plugins */
 #cmakedefine HAVE_PLUGINS 1
 

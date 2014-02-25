@@ -48,7 +48,9 @@ SHARK_COMMON_SRC =	\
 	clopts_common.c		\
 	frame_tvbuff.c		\
 	sync_pipe_write.c	\
-	version_info.c
+	version_info.c 		\
+	extcap.c		\
+	extcap_parser.c
 
 # corresponding headers
 SHARK_COMMON_INCLUDES =	\
@@ -60,6 +62,8 @@ SHARK_COMMON_INCLUDES =	\
 	clopts_common.h		\
 	cmdarg_err.h		\
 	color.h			\
+	extcap.h		\
+	extcap_parser.h		\
 	file.h			\
 	fileset.h		\
 	frame_tvbuff.h		\

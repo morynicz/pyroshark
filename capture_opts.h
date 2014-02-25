@@ -129,6 +129,11 @@ typedef struct interface_tag {
     gboolean    selected;
     gboolean    hidden;
     gboolean    locked;
+
+#ifdef HAVE_EXTCAP
+    /* External capture cached data */
+    GHashTable *external_cap_args_settings;
+#endif
 } interface_t;
 
 typedef struct link_row_tag {
@@ -146,6 +151,12 @@ typedef struct interface_options_tag {
     int linktype;
     gboolean promisc_mode;
     interface_type if_type;
+#ifdef HAVE_EXTCAP
+    gchar *extcap;
+    gchar *extcap_fifo;
+    GHashTable *extcap_args;
+    GPid extcap_pid;
+#endif
 #if defined(_WIN32) || defined(HAVE_PCAP_CREATE)
     int buffer_size;
 #endif

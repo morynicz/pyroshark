@@ -720,6 +720,11 @@ foreach(PLUGIN_DIR ${PLUGIN_SRC_DIRS})
 	add_subdirectory( ${PLUGIN_DIR} )
 endforeach()
 
+if(ENABLE_EXTCAP)
+	set(HAVE_EXTCAP 1)
+	set(EXTCAP_DIR="${DATAFILE_DIR}/extcap/${CPACK_PACKAGE_VERSION}")
+endif()
+
 add_subdirectory( asn1 EXCLUDE_FROM_ALL )
 add_subdirectory( codecs )
 add_subdirectory( epan )
@@ -889,6 +894,15 @@ set(SHARK_COMMON_SRC
 	sync_pipe_write.c
 	version_info.c
 )
+
+# sources for external capture interfaces
+if(ENABLE_EXTCAP)
+	set(SHARK_COMMON_SRC
+		${SHARK_COMMON_SRC}
+		extcap.c
+		extcap_parser.c
+	)
+endif()
 
 # sources common for wireshark and tshark, but not rawshark;
 # these are for programs that capture traffic by running dumpcap

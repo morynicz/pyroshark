@@ -185,7 +185,7 @@ enable_kernel_bpf_jit_compiler(void)
     ssize_t written _U_;
     static const char file[] = "/proc/sys/net/core/bpf_jit_enable";
 
-    fd = open(file, O_WRONLY);
+    fd = ws_open(file, O_WRONLY);
     if (fd < 0)
         return;
 
@@ -1385,7 +1385,9 @@ print_machine_readable_interfaces(GList *if_list)
             printf("\tloopback");
         else
             printf("\tnetwork");
-
+#ifdef HAVE_EXTCAP
+        printf("\t%s", if_info->extcap);
+#endif
         printf("\n");
     }
 }
@@ -1881,14 +1883,14 @@ cap_open_socket(char *pipename, pcap_options *pcap_opts, char *errmsg, int errms
     goto fail_invalid;
   }
 
-  strncpy(buf, sockname, len);
+  g_snprintf ( buf, len + 1, "%s", sockname );
   buf[len] = '\0';
   if (inet_pton(AF_INET, buf, &sa.sin_addr) <= 0) {
     goto fail_invalid;
   }
 
   sa.sin_family = AF_INET;
-  sa.sin_port = htons((u_short)port);
+  sa.sin_port = g_htons((u_short)port);
 
   if (((fd = (int)socket(AF_INET, SOCK_STREAM, 0)) < 0) ||
       (connect(fd, (struct sockaddr *)&sa, sizeof(sa)) < 0)) {
@@ -1910,7 +1912,7 @@ cap_open_socket(char *pipename, pcap_options *pcap_opts, char *errmsg, int errms
       if (errorText)
           LocalFree(errorText);
 #else
-      "         %d: %s", errno, strerror(errno));
+      "         %d: %s", errno, g_strerror(errno));
 #endif
       pcap_opts->cap_pipe_err = PIPERR;
 

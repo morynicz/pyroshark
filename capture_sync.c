@@ -98,6 +98,9 @@
 #include <wsutil/filesystem.h>
 #include <wsutil/file_util.h>
 #include <wsutil/report_err.h>
+#ifdef HAVE_EXTCAP
+#include "extcap.h"
+#endif
 #include "log.h"
 
 #ifdef _WIN32
@@ -391,6 +394,13 @@ sync_pipe_start(capture_options *capture_opts, capture_session *cap_session, voi
 
     cap_session->fork_child = -1;
 
+#ifdef HAVE_EXTCAP
+    if (!extcaps_init_initerfaces(capture_opts)) {
+        report_failure("Unable to init extcaps. (tmp fifo already exists?)");
+        return FALSE;
+    }
+#endif
+
     argv = init_pipe_args(&argc);
     if (!argv) {
         /* We don't know where to find dumpcap. */
@@ -463,7 +473,12 @@ sync_pipe_start(capture_options *capture_opts, capture_session *cap_session, voi
         interface_opts = g_array_index(capture_opts->ifaces, interface_options, j);
 
         argv = sync_pipe_add_arg(argv, &argc, "-i");
-        argv = sync_pipe_add_arg(argv, &argc, interface_opts.name);
+#ifdef HAVE_EXTCAP
+        if (interface_opts.extcap_fifo != NULL)
+            argv = sync_pipe_add_arg(argv, &argc, interface_opts.extcap_fifo);
+        else
+#endif
+            argv = sync_pipe_add_arg(argv, &argc, interface_opts.name);
 
         if (interface_opts.cfilter != NULL && strlen(interface_opts.cfilter) != 0) {
             argv = sync_pipe_add_arg(argv, &argc, "-f");
@@ -476,8 +491,12 @@ sync_pipe_start(capture_options *capture_opts, capture_session *cap_session, voi
         }
 
         if (interface_opts.linktype != -1) {
-            argv = sync_pipe_add_arg(argv, &argc, "-y");
-            argv = sync_pipe_add_arg(argv, &argc, linktype_val_to_name(interface_opts.linktype));
+            const char *linktype = linktype_val_to_name(interface_opts.linktype);
+            if ( linktype != NULL )
+            {
+                argv = sync_pipe_add_arg(argv, &argc, "-y");
+                argv = sync_pipe_add_arg(argv, &argc, linktype);
+            }
         }
 
         if (!interface_opts.promisc_mode) {
@@ -1740,6 +1759,10 @@ sync_pipe_input_cb(gint source, gpointer user_data)
 
 #ifdef _WIN32
         ws_close(cap_session->signal_pipe_write_fd);
+#endif
+#ifdef HAVE_EXTCAP
+        g_log(LOG_DOMAIN_CAPTURE, G_LOG_LEVEL_DEBUG, "sync_pipe_input_cb: cleaning extcap pipe");
+        extcap_cleanup(cap_session->capture_opts);
 #endif
         capture_input_closed(cap_session, primary_msg);
         g_free(primary_msg);
