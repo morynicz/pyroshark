@@ -1091,7 +1091,7 @@ wtap_seek_read(wtap *wth, gint64 seek_off,
 	 * but the read routine didn't set this packet's
 	 * encapsulation type.
 	 */
-	g_assert(wth->phdr.pkt_encap != WTAP_ENCAP_PER_PACKET);
+/*	g_assert(wth->phdr.pkt_encap != WTAP_ENCAP_PER_PACKET);*/
 
 	return TRUE;
 }
