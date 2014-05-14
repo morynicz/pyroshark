@@ -65,6 +65,7 @@
 #include "erf.h"
 #include "hcidump.h"
 #include "logcat.h"
+#include "logcat_text_brief.h"
 #include "network_instruments.h"
 #include "k12.h"
 #include "ber.h"
@@ -362,6 +363,7 @@ static struct open_info open_info_base[] = {
     { "Commview",                    OPEN_INFO_HEURISTIC, commview_open,            "ncf",      NULL, NULL },
     { "Nstrace",                     OPEN_INFO_HEURISTIC, nstrace_open,             "txt",      NULL, NULL },
     { "Logcat ",                     OPEN_INFO_HEURISTIC, logcat_open,              "logcat",   NULL, NULL },
+    { "Logcat Text Brief",           OPEN_INFO_HEURISTIC, logcat_text_brief_open,   "txt",      NULL, NULL },
     /* ASCII trace files from Telnet sessions. */
     { "Ascend",                      OPEN_INFO_HEURISTIC, ascend_open,              "txt",      NULL, NULL },
     { "Toshiba",                     OPEN_INFO_HEURISTIC, toshiba_open,             "txt",      NULL, NULL },
